@@ -15,17 +15,17 @@ public class ChoiceColor {
     }
 
     public Color getColor(double value){
-        if(value < minValue || minValue > maxValue)
+        if(value < minValue || value > maxValue)
             return Color.black;
-        double diver = 0;
+        double diver;
         double middle = (minValue + maxValue) / 2;
         if(value > middle){
-            diver = (maxValue - middle) / (value - middle);
+            diver =  (value - middle) / (maxValue - middle);
             return new Color((int)(255 * diver) , (int)(255 * (1 - diver)) , 0);
         }
         else{
-            diver = (middle - minValue) / (middle - value + 1);
-            return new Color(0, (int)(255 * diver) , (int)(255 * (1 - diver)));
+            diver = (middle - value) / (middle - minValue);
+            return new Color(0, (int)(255 * (1 - diver)) , (int)(255 *  diver));
         }
     }
 }

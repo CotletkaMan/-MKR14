@@ -32,14 +32,14 @@ public class RectangleNode extends Node {
 
     @Override
     public RectangleNode getNormalNode(){
-        if(getNeighbour(Position.LEFT) != null && getNeighbour(Position.RIGTH) == null)
-            return getNeighbour(Position.LEFT);
-        if(getNeighbour(Position.RIGTH) != null && getNeighbour(Position.LEFT) == null)
-            return getNeighbour(Position.RIGTH);
         if(getNeighbour(Position.UP) != null && getNeighbour(Position.DOWN) == null)
             return getNeighbour(Position.UP);
         if(getNeighbour(Position.DOWN) != null && getNeighbour(Position.UP) == null)
             return getNeighbour(Position.DOWN);
+        if(getNeighbour(Position.LEFT) != null && getNeighbour(Position.RIGTH) == null)
+            return getNeighbour(Position.LEFT);
+        if(getNeighbour(Position.RIGTH) != null && getNeighbour(Position.LEFT) == null)
+            return getNeighbour(Position.RIGTH);
         return this;
     }
 

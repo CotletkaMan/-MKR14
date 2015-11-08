@@ -8,7 +8,6 @@ import utility.Pair;
 import utility.matrixSolution;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -71,9 +70,10 @@ public class MKR{
 
     private void addInitCondition(double[][] stiffnessMatrix , double[] iniCond , double stepT){
         for(int i = 0 ; i < stiffnessMatrix.length ; i++) {
-            if(mesh.get(i).isInnerNode())
-                stiffnessMatrix[mesh.get(i).getNodeNumber()][mesh.get(i).getNodeNumber()] += 1./stepT;
-            stiffnessMatrix[i][stiffnessMatrix.length] = iniCond[i] / stepT;
+            if(mesh.get(i).isInnerNode()) {
+                stiffnessMatrix[mesh.get(i).getNodeNumber()][mesh.get(i).getNodeNumber()] += 1. / stepT;
+                stiffnessMatrix[i][stiffnessMatrix.length] = iniCond[i] / stepT;
+            }
         }
     }
     private void addCondition(double[][] stiffnessMatrix ,HashSet<Constrain> constrains){

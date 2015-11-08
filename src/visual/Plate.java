@@ -8,6 +8,8 @@ import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,7 +23,7 @@ public class Plate extends JPanel {
     private double time = 20;
     private double temperature = 10;
     private double[] initCondition;
-    private ChoiceColor choiceColor = new ChoiceColor(0 , 700);
+    private ChoiceColor choiceColor = new ChoiceColor(0 , 500); /// <--- всегда нужно проверять когда меняешь граничные условия. Нужно устанавливать диапазон значений из МКР.
 
     private int meshX = 10;
     private int meshY = 10;
@@ -37,22 +39,42 @@ public class Plate extends JPanel {
 
     HashMap<Integer , Pair<State , Double>> constrains;
 
-    public Plate(ChoiceConstrain choiceConstrain){
+    public Plate(double widthX , double widthY , double time , double temperature , ChoiceConstrain choiceConstrain){
+        this.widthX = widthX;
+        this.widthY = widthY;
+        this.time = time;
+        this.temperature = temperature;
         constrains = new HashMap<Integer , Pair<State , Double>>();
         this.choiceConstrain = choiceConstrain;
         setBackground(Color.WHITE);
         createPoint();
         configuration();
+        createInitConstrain();
     }
 
-    public void paintComponent(Graphics g){
-        super.paintComponent(g);
+    public void paintComponent(Graphics g2){
+        super.paintComponent(g2);
         int width = getWidth() - 2 * alignX;
         int heigth = getHeight() - 2* alignY;
-        Graphics2D g2 = (Graphics2D)g;
 
         if(data != null){
+            double[] temperatures = data.get(currentFrame).getY();
+            for(int i = 0 ; i < temperatures.length ; i++){
+                g2.setColor(choiceColor.getColor(temperatures[i]));
+                double x1 = 0  ,x2 = 0 , y1 = 0 , y2 = 0;
+                if(i % (meshX + 1) > 0)
+                    x1 = (point[i].x - point[i-1].x)/2 + 1;
+                if(i % (meshX + 1) < meshX)
+                    x2 = (point[i + 1].x - point[i].x)/2 + 1;
+                if(i / (meshX + 1) > 0)
+                    y1 = (point[i].y - point[i - meshX - 1].y)/2 + 1;
+                if(i / (meshX + 1) < meshY)
+                    y2 = (point[i + meshX + 1].y - point[i].y)/2 + 1;
 
+                g2.fillRect((int)(point[i].x - x1) , (int)(point[i].y - y1) , (int)(x1 + x2) , (int)(y1 + y2));
+
+
+            }
         }
 
         g2.setColor(Color.black);
@@ -81,14 +103,18 @@ public class Plate extends JPanel {
     public void setMeshX(int meshX){
         this.meshX = meshX;
         createPoint();
+        data = null;
         constrains = new HashMap<Integer , Pair<State , Double>>();
+        createInitConstrain();
         repaint();
     }
 
     public void setMeshY(int meshY){
         this.meshY = meshY;
         createPoint();
+        data = null;
         constrains = new HashMap<Integer , Pair<State , Double>>();
+        createInitConstrain();
         repaint();
     }
 
@@ -144,7 +170,59 @@ public class Plate extends JPanel {
         }
         MKR mkr = new MKR(widthX , widthY , meshX , meshY);
         data = mkr.calculateMKR(initCondition , constrainSet , stepT , time);
+        try {
+            BufferedWriter reader = new BufferedWriter(new FileWriter("report.txt"));
+            for(Pair<Double , double[]> array : data){
+                reader.write("Time :: " + array.getX() + "\n");
+                for(int i = 0 ; i < array.getY().length ; i++) {
+                    reader.write(array.getY()[i] + " ");
+                    if((i + 1) % (meshX + 1) == 0)
+                        reader.write("\n");
+                }
+                reader.write("\n");
+            }
+            reader.close();
+        }
+        catch(Exception e){
+            System.err.println("Error in open file");
+        }
         currentFrame = 0;
         repaint();
+    }
+
+    public void next(){
+        if(data !=  null) {
+            currentFrame = (currentFrame + 1) % data.size();
+            repaint();
+        }
+    }
+
+    public void prev(){
+        currentFrame--;
+            if(data != null && currentFrame < 0) {
+                currentFrame = data.size() - 1;
+                repaint();
+            }
+    }
+
+    public double getTime(){
+        if(data != null)
+            return data.get(currentFrame).getX();
+        else
+            return 0;
+    }
+
+    private void createInitConstrain(){
+        for(int i = 0 ; i <= meshY; i ++)
+            constrains.put(i * (meshX + 1) , new Pair<State, Double>(State.VALUE , 500.));
+        for(int i = 1 ; i < meshY ; i++)
+            constrains.put((i + 1) * (meshX + 1) - 1, new Pair<State, Double>(State.VALUE , 500.));
+        for(int i = 0 ; i <= meshX; i++)
+            constrains.put((meshX + 1) * meshY + i , new Pair<State, Double>(State.HEATBOUND , 0.));
+        for(int i = 0 ; i <= meshX; i++)
+            if(i < meshX / 2)
+                constrains.put(i , new Pair<State, Double>(State.VALUE , 500.));
+            else
+                constrains.put(i , new Pair<State, Double>(State.HEATBOUND , 0.));
     }
 }
