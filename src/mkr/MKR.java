@@ -4,7 +4,10 @@ import mkr.constrain.Constrain;
 import mkr.mesh.RectangleMesh;
 import mkr.mesh.MeshCreator;
 import mkr.mesh.RectangleNode.*;
+import utility.Pair;
 import utility.matrixSolution;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -19,18 +22,18 @@ public class MKR{
         stiffnessMatrix = createStiffnessMatrix(mesh);
     }
 
-    public HashMap<Double , double[]> calculateMKR(double[] iniCond , HashSet<Constrain> constrains , int countT , double time){
-        HashMap<Double , double[]> result = new HashMap<Double, double[]>();
+    public ArrayList<Pair<Double , double[]>> calculateMKR(double[] iniCond , HashSet<Constrain> constrains , double countT , double time){
+        ArrayList<Pair<Double , double[]>>  result = new ArrayList<Pair<Double , double[]>> ();
         double[][] localStiffnessMatrix = new double[stiffnessMatrix.length][stiffnessMatrix[0].length];
         createLocalCopy(localStiffnessMatrix);
         addInitCondition(localStiffnessMatrix , iniCond , time / countT);
         addCondition(localStiffnessMatrix , constrains);
         double currentTime = 0;
-        result.put(currentTime , iniCond);
+        result.add(new Pair<Double, double[]>(currentTime , iniCond));
         for(int i = 0 ; i < countT ; i++){
             currentTime += time / countT;
             double[] temperature  = matrixSolution.gauss(localStiffnessMatrix);
-            result.put(currentTime , temperature);
+            result.add(new Pair<Double, double[]>(currentTime , temperature));
             createLocalCopy(localStiffnessMatrix);
             addInitCondition(localStiffnessMatrix , temperature , time / countT);
             addCondition(localStiffnessMatrix , constrains);

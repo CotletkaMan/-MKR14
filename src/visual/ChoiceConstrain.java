@@ -1,5 +1,7 @@
 package visual;
 
+import utility.Pair;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -45,36 +47,46 @@ public class ChoiceConstrain extends Panel {
 
     public Pair<State , Double> getState(){
         for(int i = 0 ; i < valuePointButton.length ; i++){
-            if(valuePointButton[i].isSelected())
-                try{
+            if(valuePointButton[i].isSelected()) {
+                if(State.values()[i] == State.DELETE)
+                    return new Pair<State, Double>(State.values()[i], 0.);
+                try {
                     double value = Double.parseDouble(textFields[i].getText());
-                    return new Pair<State, Double>(State.values()[i] , value);
+                    return new Pair<State, Double>(State.values()[i], value);
+                } catch (Exception e) {
+                    return new Pair<State, Double>(State.FOO, 0.);
                 }
-                catch (Exception e){
-                    return new Pair<State , Double>(State.FOO , 0.);
-                }
+            }
         }
         return new Pair<State , Double>(State.FOO , 0.);
     }
 }
 
 enum State{
-    VALUE , HEAT , HEATBOUND, THIRD , DELETE , FOO;
-}
+    VALUE{
+        @Override
+        public Color getColor() {
+            return Color.green;
+        }
+    }, HEAT {
+        @Override
+        public Color getColor() {
+            return Color.red;
+        }
+    }, HEATBOUND{
+        @Override
+        public Color getColor() {
+            return Color.orange;
+        }
+    }, THIRD {
+        @Override
+        public Color getColor() {
+            return Color.blue;
+        }
+    }, DELETE , FOO;
 
-class Pair<X , Y>{
-    private X x;
-    private Y y;
-    public Pair(X x , Y y){
-        this.x = x;
-        this.y = y;
+    public  Color getColor(){
+        return Color.black;
     }
 
-    public X getX(){
-        return x;
-    }
-
-    public Y getY(){
-        return y;
-    }
 }

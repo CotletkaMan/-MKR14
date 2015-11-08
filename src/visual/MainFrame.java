@@ -9,6 +9,9 @@ import java.awt.*;
 public class MainFrame {
     private JFrame mainFrame;
     private ChoiceConstrain choiceConstrain;
+    private Plate plate;
+    private ConfigPlate configPlate;
+    private Console console;
 
     public MainFrame(){
         configureWindow();
@@ -18,6 +21,9 @@ public class MainFrame {
     private void configureWindow(){
         mainFrame = new JFrame("MKR");
         choiceConstrain = new ChoiceConstrain();
+        plate = new Plate(choiceConstrain);
+        configPlate = new ConfigPlate(plate);
+        console = new Console(plate);
         mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         mainFrame.setVisible(true);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -25,5 +31,8 @@ public class MainFrame {
 
     private void addInterElements(){
         mainFrame.add(choiceConstrain , BorderLayout.NORTH);
+        mainFrame.add(plate , BorderLayout.CENTER);
+        mainFrame.add(configPlate , BorderLayout.WEST);
+        mainFrame.add(console , BorderLayout.SOUTH);
     }
 }

@@ -6,7 +6,7 @@ import mkr.mesh.RectangleMesh;
  * Created by cotletkaman on 07.11.15.
  */
 public class FirstType extends Constrain {
-    public FirstType(int index , int value){
+    public FirstType(int index , double value){
         super(index, value);
     }
 
