@@ -3,9 +3,6 @@ package mkr.constrain;
 import mkr.mesh.RectangleMesh;
 import mkr.mesh.Node;
 
-/**
- * Created by cotletkaman on 07.11.15.
- */
 public class ThirdType extends Constrain {
     public ThirdType(int ind , double value){
         super(ind , value);

@@ -2,9 +2,6 @@ package mkr.constrain;
 
 import mkr.StiffnessLineCreator;
 
-/**
- * Created by cotletkaman on 07.11.15.
- */
 public abstract class Constrain implements StiffnessLineCreator{
     protected int index;
     protected double value;

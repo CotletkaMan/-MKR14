@@ -199,10 +199,10 @@ public class Plate extends JPanel {
 
     public void prev(){
         currentFrame--;
-            if(data != null && currentFrame < 0) {
+            if(data != null && currentFrame < 0)
                 currentFrame = data.size() - 1;
-                repaint();
-            }
+        if(data != null)
+            repaint();
     }
 
     public double getTime(){
